@@ -20,6 +20,45 @@ Psono needs six server keys. Generate them all at once:
 docker run --rm psono/psono-combo:latest python3 ./psono/generateserverkeys.py
 ```
 
+The output is ready to paste field by field:
+
+```
+SECRET_KEY: 'nQ7...64 alphanumeric characters...'
+ACTIVATION_LINK_SECRET: '...'
+DB_SECRET: '...'
+EMAIL_SECRET_SALT: '$2b$12$XUG.sKxC2jmkUvWQjg53.e'
+PRIVATE_KEY: '302650c3c82f7111c2e8ceb660d32173cdc8c3d7717f1d4f982aad5234648fcb'
+PUBLIC_KEY: '02da2ad857321d701d754a7e60d0a147cdbc400ff4465e1f57bc2d9fbfeddf0b'
+```
+
+If you would rather not run the image, the same values can be produced
+separately. The three secrets are plain random strings:
+
+```
+openssl rand -hex 32
+```
+
+`EMAIL_SECRET_SALT` is a **bcrypt salt**, not a random string. Psono calls
+`bcrypt.hashpw(email, EMAIL_SECRET_SALT)` to store a lookup hash of each email
+address, so anything that is not a valid salt makes registration fail with
+`Invalid salt`:
+
+```
+python3 -c 'import bcrypt; print(bcrypt.gensalt().decode())'
+```
+
+`PRIVATE_KEY` and `PUBLIC_KEY` are one X25519 key pair, hex encoded. The public
+key is **derived** from the private key, so they must come from the same
+generation. Two separately generated keys will not work:
+
+```
+python3 -c 'import nacl.encoding
+from nacl.public import PrivateKey
+k = PrivateKey.generate()
+print("PRIVATE_KEY:", k.encode(nacl.encoding.HexEncoder).decode())
+print("PUBLIC_KEY: ", k.public_key.encode(nacl.encoding.HexEncoder).decode())'
+```
+
 Copy the six values into the *Server Keys* section and **back them up**. They
 cannot be changed after the first user has registered without losing access to
 every stored secret.

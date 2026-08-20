@@ -8,8 +8,10 @@
 
 {% set c1 = tpl.add_container(values.consts.psono_container_name, values.psono.image_selector) %}
 {% do c1.add_network(psono_net) %}
-{# nginx runs its master as root and drops its workers to the [nginx] user #}
-{% do c1.add_caps(["CHOWN", "SETGID", "SETUID"]) %}
+{# nginx runs its master as root and drops its workers to the [nginx] user.
+   /var/log/nginx, /var/lib/nginx and /run/nginx are owned by [nginx] (100:101),
+   so the root master needs DAC_OVERRIDE to open its log files. #}
+{% do c1.add_caps(["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]) %}
 
 {# The combo image runs as root, only the postgres/redis volumes need a perms check #}
 {% set perm_container = tpl.deps.perms(values.consts.perms_container_name) %}

@@ -123,16 +123,27 @@ questions:
               - variable: email_secret_salt
                 label: Email Secret Salt
                 description: |
-                  A bcrypt salt used to hash email addresses.</br>
-                  Looks like <code>$2b$12$XUG.sKxC2jmkUvWQjg53.e</code>
+                  A bcrypt salt, used to hash email addresses so they can be looked
+                  up without being stored in clear text.</br>
+                  This is <b>not</b> a random string. It must be a real bcrypt salt,
+                  otherwise registration fails with "Invalid salt".</br>
+                  Looks like <code>$2b$12$XUG.sKxC2jmkUvWQjg53.e</code> (29 characters).</br>
+                  On its own:
+                  <code>python3 -c 'import bcrypt; print(bcrypt.gensalt().decode())'</code>
                 schema:
                   type: string
                   default: ""
                   required: true
                   private: true
+                  valid_chars: '^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{22}$'
+                  valid_chars_error: Please provide a bcrypt salt, for example $2b$12$XUG.sKxC2jmkUvWQjg53.e
               - variable: private_key
                 label: Private Key
-                description: Hex encoded NaCl private key. Must match the public key below.
+                description: |
+                  Hex encoded NaCl (X25519) private key.</br>
+                  The public key below is <b>derived</b> from this one, so the two have
+                  to come from the same generation. Two independently generated keys
+                  will not work.
                 schema:
                   type: string
                   default: ""
@@ -142,7 +153,8 @@ questions:
                   valid_chars_error: Please provide a 64 character lowercase hex string.
               - variable: public_key
                 label: Public Key
-                description: Hex encoded NaCl public key. Must match the private key above.
+                description: |
+                  Hex encoded NaCl (X25519) public key, derived from the private key above.
                 schema:
                   type: string
                   default: ""

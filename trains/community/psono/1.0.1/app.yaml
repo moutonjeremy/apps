@@ -4,6 +4,8 @@ app_version: 7.3.6
 capabilities:
 - description: Psono is able to change file ownership arbitrarily
   name: CHOWN
+- description: Psono is able to bypass file permission checks
+  name: DAC_OVERRIDE
 - description: Psono is able to make arbitrary manipulations of process GIDs
   name: SETGID
 - description: Psono is able to make arbitrary manipulations of process UIDs
@@ -51,4 +53,4 @@ sources:
 - https://hub.docker.com/r/psono/psono-combo
 title: Psono
 train: community
-version: 1.0.0
+version: 1.0.1
