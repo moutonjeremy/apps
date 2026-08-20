@@ -24848,6 +24848,80 @@
                     "user_name": "Host user is [apps]"
                 }
             ]
+        },
+        "psono": {
+            "app_readme": "<h1>Psono</h1> <p><a href=\"https://psono.com/\">Psono</a> is a self-hosted, open source password manager for teams.</p> <p>This app deploys the <code>psono-combo</code> image, which bundles three things behind nginx:</p> <p>| Path | Component | | --------- | ------------------------------------ | | <code>/</code> | Web client | | <code>/server</code> | REST API (Django + daphne) | | <code>/portal</code> | Admin portal |</p> <p>Database migrations run automatically on every start.</p> <h2>Before installing</h2> <p>Psono needs six server keys. Generate them all at once:</p> <p><code>docker run --rm psono/psono-combo:latest python3 ./psono/generateserverkeys.py</code></p> <p>Copy the six values into the <em>Server Keys</em> section and <strong>back them up</strong>. They cannot be changed after the first user has registered without losing access to every stored secret.</p> <p>You also need to set <em>Base URL</em> to the exact URL browsers will use, without a trailing slash (for example <code>http://192.168.1.100:30475</code> or <code>https://psono.example.com</code>). The web client is a static bundle that is built with this value, so it has to match how users actually connect. If you later move Psono behind a reverse proxy, update <em>Base URL</em> too.</p> <h2>After installing</h2> <p>Register the first account from the Web UI. The username must end with one of the domains listed in <em>Allowed Domains</em>.</p> <p>Without SMTP configured, no activation email is sent. Activate the account from the TrueNAS shell instead:</p> <p><code>docker exec ix-&lt;app-name&gt;-psono-1 \\ python3 /root/psono/manage.py verifyuseremail &lt;username&gt;</code></p> <p>To reach the admin portal under <code>/portal</code>, promote that account:</p> <p><code>docker exec ix-&lt;app-name&gt;-psono-1 \\ python3 /root/psono/manage.py promoteuser &lt;username&gt; superuser</code></p> <h2>Enterprise Edition</h2> <p>Selecting <em>Psono Enterprise Edition</em> switches to <code>psono/psono-combo-enterprise</code>, which requires a valid Psono license. LDAP, SAML and OIDC providers are configured from the admin portal once the matching entry is enabled under <em>Authentication Methods</em>.</p> <h2>Notes</h2> <ul> <li>The container health check uses <code>/server/info/</code> rather than <code>/server/healthcheck/</code>. The latter performs an outbound NTP request on every call and is rate limited to 61 requests per hour, so it is unsuitable as a Docker health check.</li> <li>Any setting not exposed in the UI can be set through <em>Additional Environment Variables</em> using the <code>PSONO_</code> prefix, for example <code>PSONO_TIME_SERVER</code>. See the <a href=\"https://doc.psono.com/admin/other/environment-variables.html\">Psono environment variable reference</a>.</li> </ul>",
+            "categories": [
+                "security"
+            ],
+            "description": "Psono is a self-hosted, open source password manager for teams, with a web client and an admin portal.",
+            "healthy": true,
+            "healthy_error": null,
+            "home": "https://psono.com/",
+            "location": "/__w/apps/apps/trains/community/psono",
+            "latest_version": "1.0.0",
+            "latest_app_version": "7.3.6",
+            "latest_human_version": "7.3.6_1.0.0",
+            "last_update": "2026-08-20 23:08:06",
+            "name": "psono",
+            "recommended": false,
+            "title": "Psono",
+            "maintainers": [
+                {
+                    "email": "dev@truenas.com",
+                    "name": "truenas",
+                    "url": "https://www.truenas.com/"
+                }
+            ],
+            "tags": [
+                "password",
+                "manager"
+            ],
+            "screenshots": [],
+            "sources": [
+                "https://apps.truenas.com/catalog/psono_community/",
+                "https://psono.com/",
+                "https://gitlab.com/esaqa/psono/psono-combo",
+                "https://hub.docker.com/r/psono/psono-combo"
+            ],
+            "icon_url": "https://media.sys.truenas.net/apps/psono/icons/icon.svg",
+            "capabilities": [
+                {
+                    "description": "Psono is able to change file ownership arbitrarily",
+                    "name": "CHOWN"
+                },
+                {
+                    "description": "Psono is able to make arbitrary manipulations of process GIDs",
+                    "name": "SETGID"
+                },
+                {
+                    "description": "Psono is able to make arbitrary manipulations of process UIDs",
+                    "name": "SETUID"
+                }
+            ],
+            "run_as_context": [
+                {
+                    "description": "Container [psono] runs as root user and group.",
+                    "gid": 0,
+                    "group_name": "Host group is [root]",
+                    "uid": 0,
+                    "user_name": "Host user is [root]"
+                },
+                {
+                    "description": "Container [postgres] runs as non-root user and group.",
+                    "gid": 999,
+                    "group_name": "Host group is [docker]",
+                    "uid": 999,
+                    "user_name": "Host user is [netdata]"
+                },
+                {
+                    "description": "Container [redis] runs as non-root user and group.",
+                    "gid": 568,
+                    "group_name": "Host group is [apps]",
+                    "uid": 568,
+                    "user_name": "Host user is [apps]"
+                }
+            ]
         }
     },
     "enterprise": {
